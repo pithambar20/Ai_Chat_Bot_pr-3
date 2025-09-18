@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #4f8cff;
+            --background: #f8fafc;
+            --card-bg: #fff;
+            --border: #ebedf0;
+            --chat-bg: #f1f7ff;
+            --footer-bg: #222c3c;
+            --text: #222c3c;
+            --muted: #929fb1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--primary);
+            color: #fff;
+            padding: 30px 0 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(79, 140, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.15rem;
+            color: #dbeaff;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto 0 auto;
+            padding: 25px;
+            background: var(--card-bg);
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(79, 140, 255, 0.07);
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero h2 {
+            font-size: 1.7rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: 1.07rem;
+        }
+
+        .chat-interface {
+            background: var(--chat-bg);
+            border-radius: 8px;
+            padding: 25px 18px 18px 18px;
+            margin-bottom: 20px;
+            min-height: 220px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .bot,
+        .user {
+            border-radius: 50%;
+            width: 37px;
+            height: 37px;
+            margin-right: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .bot {
+            background: var(--primary);
+            color: white;
+        }
+
+        .user {
+            background: #b3cef6;
+            color: var(--primary);
+        }
+
+        .message-content {
+            background: #fff;
+            border-radius: 10px;
+            padding: 11px 15px;
+            max-width: 78%;
+            box-shadow: 0 1px 4px #e6eef9;
+            font-size: 1.01rem;
+            color: var(--text);
+        }
+
+        .input-area {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            font-size: 1em;
+            outline: none;
+        }
+
+        .input-area button {
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 7px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .input-area button:hover {
+            background: #2363be;
+        }
+
+        footer {
+            background: var(--footer-bg);
+            color: #e7eefc;
+            text-align: center;
+            padding: 24px 0 12px 0;
+            margin-top: 50px;
+            font-size: 0.97em;
+            letter-spacing: 0.03em;
+        }
+
+        @media (max-width:600px) {
+            .container {
+                padding: 8px;
+                border-radius: 0;
+            }
+
+            .chat-interface {
+                padding: 13px 5px 10px 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>AI Assistant</h1>
+        <p>Interact with your smart AI – the future is here!</p>
+    </header>
+    <div class="container">
+        <section class="hero">
+            <h2>Meet Your AI Assistant</h2>
+            <p>Ask any question or give a task! This is your simple interactive interface for AI-powered answers and productivity.</p>
+        </section>
+        <section class="chat-interface">
+            <div id="chat-messages">
+                <div class="message">
+                    <div class="bot">AI</div>
+                    <div class="message-content">Hello! How can I help you today?</div>
+                </div>
+            </div>
+            <form class="input-area" id="input-form" action="/submit_message" method="POST">
+                <input type="text" placeholder="Type your message..." id="message-input" name="message" />
+                <button type="submit">Send</button>
+            </form>
+            <a href="/about">About</a>
+        </section>
+    </div>
+    <footer>
+        &copy; 2025 AI Assistant. Made with &hearts; for the future. All rights reserved.
+    </footer>
+    <script>
+        const form = document.getElementById('input-form');
+        const inputField = document.getElementById('message-input');
+        const chatMessages = document.getElementById('chat-messages');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const messageText = inputField.value.trim();
+            if (!messageText) return;
+
+            // Add user message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.classList.add('message');
+            userMessageDiv.innerHTML = `<div class="user">U</div><div class="message-content">${messageText}</div>`;
+            chatMessages.appendChild(userMessageDiv);
+
+            // Send message to Flask
+            fetch('/submit_message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `message=${encodeURIComponent(messageText)}`
+            })
+            .then(response => response.text())
+            .then(aiResponse => {
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.classList.add('message');
+                aiMessageDiv.innerHTML = `<div class="bot">AI</div><div class="message-content">${aiResponse}</div>`;
+                chatMessages.appendChild(aiMessageDiv);
+            });
+
+            inputField.value = ''; // clear input
+        });
+    </script>
+</body>
+
+</html>
